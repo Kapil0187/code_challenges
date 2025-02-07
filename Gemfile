@@ -50,3 +50,4 @@ gem "rack-cors"
 gem "devise"
 gem "devise-jwt"
 gem "foreman"
+gem "dotenv-rails", groups: [ :development, :test ]

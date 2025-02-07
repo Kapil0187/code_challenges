@@ -1,7 +1,9 @@
 module Api
   module V1
     class ChallengesController < ApplicationController
+      before_action :authenticate_user!, only: [ :create, :update, :destroy ]
       before_action :set_challenge, only: [ :show, :update, :destroy ]
+      before_action :authenticate_admin, only: [ :create, :update, :destroy ]
 
       def index
         challenges = Challenge.all
@@ -13,7 +15,7 @@ module Api
       end
 
       def create
-        challenge = Challenge.new(challenge_params)
+        challenge = current_user.challenges.build(challenge_params)
         if challenge.save
           render json: challenge, status: :created
         else
@@ -44,6 +46,10 @@ module Api
 
       def challenge_params
         params.require(:challenge).permit(:title, :description, :start_date, :end_date)
+      end
+
+      def authenticate_admin
+        render json: { error: "You are not authorized to perform this action" }, status: :forbidden unless current_user.email == ENV["ADMIN_EMAIL"]
       end
     end
   end
